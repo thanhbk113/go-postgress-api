@@ -1,0 +1,9 @@
+1.install migration ( golang migrate)
+  1.1 create migration : migrate create -ext sql -dir db/migrations -seq init_schema
+  1.2 install the uuid-ossp extension to postgresql
+      B1 : psql -U postgres
+      B2 : CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  1.3 up migration : migrate -path db/migrations -database "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" -verbose up
+2.install sqlc ( golang sqlc)
+    2.1 create sqlc : sqlc init
+    2.2 generate sqlc : sqlc generate
