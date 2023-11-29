@@ -7,3 +7,7 @@ type PostResponse struct {
 	Image     string `json:"image"`
 	CreatedAt string `json:"created_at"`
 }
+
+type LikeResponse struct {
+	Like int `json:"like"`
+}

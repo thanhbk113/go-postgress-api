@@ -24,6 +24,9 @@ func PostRoute(rg *gin.RouterGroup, postsv i.PostInterface) {
 	g.POST("/", controller.CreatePost)
 	g.DELETE("/:postId", controller.DeletePostById)
 	g.GET("/:postId", controller.GetPostById)
-	// router.GET("/", pc.postController.GetAllPosts)
-	// router.PATCH("/:postId", pc.postController.UpdatePost)
+	g.PATCH("/:postId/like", controller.LikePost)
+	g.PATCH("/:postId/dislike", controller.DislikePost)
+
+	// g.GET("/", pc.postController.GetAllPosts)
+	// g.PATCH("/:postId", pc.postController.UpdatePost)
 }

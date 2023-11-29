@@ -21,7 +21,7 @@ INSERT INTO posts (
 ) VALUES (
   $1, $2, $3, $4
 )
-RETURNING id, title, category, content, image, created_at, updated_at
+RETURNING id, title, category, content, image, created_at, updated_at, "like", dislike
 `
 
 type CreatePostParams struct {
@@ -47,6 +47,8 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.Image,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Like,
+		&i.Dislike,
 	)
 	return i, err
 }
@@ -61,8 +63,44 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const dislikePost = `-- name: DislikePost :exec
+UPDATE posts
+set
+"dislike" = "dislike" + 1
+WHERE id = $1
+`
+
+func (q *Queries) DislikePost(ctx context.Context, id uuid.UUID) error {
+	_, err := q.exec(ctx, q.dislikePostStmt, dislikePost, id)
+	return err
+}
+
+const getDislike = `-- name: GetDislike :one
+SELECT "dislike" FROM posts
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetDislike(ctx context.Context, id uuid.UUID) (int32, error) {
+	row := q.queryRow(ctx, q.getDislikeStmt, getDislike, id)
+	var dislike int32
+	err := row.Scan(&dislike)
+	return dislike, err
+}
+
+const getLike = `-- name: GetLike :one
+SELECT "like" FROM posts
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetLike(ctx context.Context, id uuid.UUID) (int32, error) {
+	row := q.queryRow(ctx, q.getLikeStmt, getLike, id)
+	var like int32
+	err := row.Scan(&like)
+	return like, err
+}
+
 const getPostById = `-- name: GetPostById :one
-SELECT id, title, category, content, image, created_at, updated_at FROM posts
+SELECT id, title, category, content, image, created_at, updated_at, "like", dislike FROM posts
 WHERE id = $1 LIMIT 1
 `
 
@@ -77,12 +115,26 @@ func (q *Queries) GetPostById(ctx context.Context, id uuid.UUID) (Post, error) {
 		&i.Image,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Like,
+		&i.Dislike,
 	)
 	return i, err
 }
 
+const likePost = `-- name: LikePost :exec
+UPDATE posts
+set
+"like" = "like" + 1
+WHERE id = $1
+`
+
+func (q *Queries) LikePost(ctx context.Context, id uuid.UUID) error {
+	_, err := q.exec(ctx, q.likePostStmt, likePost, id)
+	return err
+}
+
 const listPosts = `-- name: ListPosts :many
-SELECT id, title, category, content, image, created_at, updated_at FROM posts
+SELECT id, title, category, content, image, created_at, updated_at, "like", dislike FROM posts
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -110,6 +162,8 @@ func (q *Queries) ListPosts(ctx context.Context, arg ListPostsParams) ([]Post, e
 			&i.Image,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Like,
+			&i.Dislike,
 		); err != nil {
 			return nil, err
 		}
@@ -133,7 +187,7 @@ content = coalesce($3, content) ,
 image = coalesce($4, image), 
 updated_at = coalesce($5, updated_at ) 
 WHERE id = $6
-RETURNING id, title, category, content, image, created_at, updated_at
+RETURNING id, title, category, content, image, created_at, updated_at, "like", dislike
 `
 
 type UpdatePostParams struct {
@@ -163,6 +217,8 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.Image,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Like,
+		&i.Dislike,
 	)
 	return i, err
 }

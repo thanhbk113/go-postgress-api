@@ -70,3 +70,37 @@ func (p *PostHandler) GetPostById(c *gin.Context) {
 	}
 	gg.Response200(post, "")
 }
+
+func (p *PostHandler) LikePost(c *gin.Context) {
+
+	var (
+		gg  = gincustom.GinGetCustomCtx(c)
+		ctx = gg.GetRequestCtx()
+	)
+
+	postId := c.Param("postId")
+
+	err := p.PostService.TransactionLikePost(ctx, postId)
+	if err != nil {
+		gg.Response400(nil, err.Error())
+		return
+	}
+	gg.Response200(nil, "")
+}
+
+func (p *PostHandler) DislikePost(c *gin.Context) {
+
+	var (
+		gg  = gincustom.GinGetCustomCtx(c)
+		ctx = gg.GetRequestCtx()
+	)
+
+	postId := c.Param("postId")
+
+	err := p.PostService.TransactionDisLikePost(ctx, postId)
+	if err != nil {
+		gg.Response400(nil, err.Error())
+		return
+	}
+	gg.Response200(nil, "")
+}

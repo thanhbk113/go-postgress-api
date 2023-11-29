@@ -18,4 +18,6 @@ type Post struct {
 	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Like      int32     `json:"like"`
+	Dislike   int32     `json:"dislike"`
 }

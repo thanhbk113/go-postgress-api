@@ -30,8 +30,20 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deletePostStmt, err = db.PrepareContext(ctx, deletePost); err != nil {
 		return nil, fmt.Errorf("error preparing query DeletePost: %w", err)
 	}
+	if q.dislikePostStmt, err = db.PrepareContext(ctx, dislikePost); err != nil {
+		return nil, fmt.Errorf("error preparing query DislikePost: %w", err)
+	}
+	if q.getDislikeStmt, err = db.PrepareContext(ctx, getDislike); err != nil {
+		return nil, fmt.Errorf("error preparing query GetDislike: %w", err)
+	}
+	if q.getLikeStmt, err = db.PrepareContext(ctx, getLike); err != nil {
+		return nil, fmt.Errorf("error preparing query GetLike: %w", err)
+	}
 	if q.getPostByIdStmt, err = db.PrepareContext(ctx, getPostById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostById: %w", err)
+	}
+	if q.likePostStmt, err = db.PrepareContext(ctx, likePost); err != nil {
+		return nil, fmt.Errorf("error preparing query LikePost: %w", err)
 	}
 	if q.listPostsStmt, err = db.PrepareContext(ctx, listPosts); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPosts: %w", err)
@@ -54,9 +66,29 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deletePostStmt: %w", cerr)
 		}
 	}
+	if q.dislikePostStmt != nil {
+		if cerr := q.dislikePostStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing dislikePostStmt: %w", cerr)
+		}
+	}
+	if q.getDislikeStmt != nil {
+		if cerr := q.getDislikeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getDislikeStmt: %w", cerr)
+		}
+	}
+	if q.getLikeStmt != nil {
+		if cerr := q.getLikeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getLikeStmt: %w", cerr)
+		}
+	}
 	if q.getPostByIdStmt != nil {
 		if cerr := q.getPostByIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostByIdStmt: %w", cerr)
+		}
+	}
+	if q.likePostStmt != nil {
+		if cerr := q.likePostStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing likePostStmt: %w", cerr)
 		}
 	}
 	if q.listPostsStmt != nil {
@@ -110,7 +142,11 @@ type Queries struct {
 	tx              *sql.Tx
 	createPostStmt  *sql.Stmt
 	deletePostStmt  *sql.Stmt
+	dislikePostStmt *sql.Stmt
+	getDislikeStmt  *sql.Stmt
+	getLikeStmt     *sql.Stmt
 	getPostByIdStmt *sql.Stmt
+	likePostStmt    *sql.Stmt
 	listPostsStmt   *sql.Stmt
 	updatePostStmt  *sql.Stmt
 }
@@ -121,7 +157,11 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:              tx,
 		createPostStmt:  q.createPostStmt,
 		deletePostStmt:  q.deletePostStmt,
+		dislikePostStmt: q.dislikePostStmt,
+		getDislikeStmt:  q.getDislikeStmt,
+		getLikeStmt:     q.getLikeStmt,
 		getPostByIdStmt: q.getPostByIdStmt,
+		likePostStmt:    q.likePostStmt,
 		listPostsStmt:   q.listPostsStmt,
 		updatePostStmt:  q.updatePostStmt,
 	}

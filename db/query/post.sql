@@ -33,3 +33,23 @@ RETURNING *;
 -- name: DeletePost :exec
 DELETE FROM posts
 WHERE id = $1;
+
+-- name: LikePost :exec
+UPDATE posts
+set
+"like" = "like" + 1
+WHERE id = $1;
+
+-- name: DislikePost :exec
+UPDATE posts
+set
+"dislike" = "dislike" + 1
+WHERE id = $1;
+
+-- name: GetLike :one
+SELECT "like" FROM posts
+WHERE id = $1 LIMIT 1;
+
+-- name: GetDislike :one
+SELECT "dislike" FROM posts
+WHERE id = $1 LIMIT 1;

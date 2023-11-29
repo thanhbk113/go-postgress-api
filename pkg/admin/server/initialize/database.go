@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	db *dbConn.Queries
+	db    *dbConn.Queries
+	sqlDB *sql.DB
 )
 
 func database() {
@@ -20,10 +21,16 @@ func database() {
 	}
 
 	db = dbConn.New(conn)
+	sqlDB = conn
 	fmt.Println("PostgreSQL connected successfully...")
 }
 
 // GetDB
 func GetDB() *dbConn.Queries {
 	return db
+}
+
+// GetSQLDB
+func GetSQLDB() *sql.DB {
+	return sqlDB
 }

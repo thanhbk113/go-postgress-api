@@ -74,3 +74,46 @@ func (p *postImpl) GetPostById(ctx context.Context, postId string) (dtores.PostR
 
 	return postResponse, nil
 }
+
+// TransactionLikePost
+func (p *postImpl) TransactionLikePost(ctx context.Context, postId string) error {
+
+	db := initialize.GetDB()
+	tx, err := initialize.GetSQLDB().BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := db.WithTx(tx)
+
+	err = qtx.LikePost(ctx, uuid.MustParse(postId))
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+// TransactionDislikePost
+func (p *postImpl) TransactionDisLikePost(ctx context.Context, postId string) error {
+
+	db := initialize.GetDB()
+	tx, err := initialize.GetSQLDB().BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+
+	qtx := db.WithTx(tx)
+
+	err = qtx.DislikePost(ctx, uuid.MustParse(postId))
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
