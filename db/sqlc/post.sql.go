@@ -8,7 +8,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -18,22 +17,18 @@ INSERT INTO posts (
   title,
   content,
   category,
-  image,
-  created_at,
-  updated_at
+  image
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4
 )
 RETURNING id, title, category, content, image, created_at, updated_at
 `
 
 type CreatePostParams struct {
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	Category  string    `json:"category"`
-	Image     string    `json:"image"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	Category string `json:"category"`
+	Image    string `json:"image"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -42,8 +37,6 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.Content,
 		arg.Category,
 		arg.Image,
-		arg.CreatedAt,
-		arg.UpdatedAt,
 	)
 	var i Post
 	err := row.Scan(

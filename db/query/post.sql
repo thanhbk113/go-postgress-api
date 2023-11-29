@@ -3,11 +3,9 @@ INSERT INTO posts (
   title,
   content,
   category,
-  image,
-  created_at,
-  updated_at
+  image
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4
 )
 RETURNING *;
 
