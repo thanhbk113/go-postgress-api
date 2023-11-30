@@ -2,7 +2,12 @@ package posts
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	db "thanhbk113/db/sqlc"
+	"thanhbk113/internal/constant"
+	"thanhbk113/internal/module/redis"
+	"thanhbk113/internal/query"
 
 	dto "thanhbk113/pkg/admin/dto/request"
 	dtores "thanhbk113/pkg/admin/dto/response"
@@ -116,4 +121,79 @@ func (p *postImpl) TransactionDisLikePost(ctx context.Context, postId string) er
 	}
 
 	return tx.Commit()
+}
+
+// GetPosts
+func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtores.PostResposeAll, error) {
+	var (
+		postResponseAll = dtores.PostResposeAll{
+			PostResponse: make([]dtores.PostResponse, query.Limit),
+			Total:        0,
+			Limit:        query.Limit,
+		}
+	)
+
+	//check db in redis or not
+	cacheKey := constant.CachePosts
+
+	cacheData, err := redis.GetValue(cacheKey)
+
+	if err != nil {
+		fmt.Println("err get data cache redis: ", err)
+	}
+
+	if cacheData != "" {
+		err = json.Unmarshal([]byte(cacheData), &postResponseAll)
+
+		if err != nil {
+			return postResponseAll, err
+		}
+
+		return postResponseAll, nil
+	}
+
+	args := &db.ListPostsParams{
+		Limit:  query.Limit,
+		Offset: query.Page,
+	}
+
+	posts, err := initialize.GetDB().ListPosts(ctx, *args)
+
+	if err != nil {
+		return postResponseAll, err
+	}
+
+	total, err := initialize.GetDB().CountPosts(ctx)
+
+	if err != nil {
+		return postResponseAll, err
+	}
+
+	postResponseAll.Total = int(total)
+
+	if len(posts) == 0 {
+		return postResponseAll, nil
+	}
+
+	for i, post := range posts {
+		postResponse := dtores.PostResponse{
+			Title:     post.Title,
+			Category:  post.Category,
+			Content:   post.Content,
+			Image:     post.Image,
+			CreatedAt: post.CreatedAt.String(),
+		}
+
+		postResponseAll.PostResponse[i] = postResponse
+
+	}
+
+	//cache data to redis
+	err = redis.SetKeyValue(cacheKey, postResponseAll, 15)
+
+	if err != nil {
+		return postResponseAll, err
+	}
+
+	return postResponseAll, nil
 }

@@ -12,7 +12,8 @@ type Config struct {
 	PostgresSource string `mapstructure:"POSTGRES_SOURCE"`
 	ServerPort     string `mapstructure:"SERVER_PORT"`
 	ClientPort     string `mapstructure:"CLIENT_PORT"`
-	Origin         string `mapstructure:"ORIGIN"`
+	RedisUri       string `mapstructure:"REDIS_URI"`
+	RedisPassword  string `mapstructure:"REDIS_PASSWORD"`
 }
 
 var config Config
@@ -28,6 +29,8 @@ func LoadConfig() (err error) {
 		PostgresSource: os.Getenv("POSTGRES_SOURCE"),
 		ServerPort:     os.Getenv("SERVER_PORT"),
 		ClientPort:     os.Getenv("CLIENT_PORT"),
+		RedisUri:       os.Getenv("REDIS_URI"),
+		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
 	}
 
 	return nil

@@ -24,6 +24,9 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.countPostsStmt, err = db.PrepareContext(ctx, countPosts); err != nil {
+		return nil, fmt.Errorf("error preparing query CountPosts: %w", err)
+	}
 	if q.createPostStmt, err = db.PrepareContext(ctx, createPost); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePost: %w", err)
 	}
@@ -56,6 +59,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.countPostsStmt != nil {
+		if cerr := q.countPostsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countPostsStmt: %w", cerr)
+		}
+	}
 	if q.createPostStmt != nil {
 		if cerr := q.createPostStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPostStmt: %w", cerr)
@@ -140,6 +148,7 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db              DBTX
 	tx              *sql.Tx
+	countPostsStmt  *sql.Stmt
 	createPostStmt  *sql.Stmt
 	deletePostStmt  *sql.Stmt
 	dislikePostStmt *sql.Stmt
@@ -155,6 +164,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:              tx,
 		tx:              tx,
+		countPostsStmt:  q.countPostsStmt,
 		createPostStmt:  q.createPostStmt,
 		deletePostStmt:  q.deletePostStmt,
 		dislikePostStmt: q.dislikePostStmt,

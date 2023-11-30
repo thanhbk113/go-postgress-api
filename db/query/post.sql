@@ -53,3 +53,6 @@ WHERE id = $1 LIMIT 1;
 -- name: GetDislike :one
 SELECT "dislike" FROM posts
 WHERE id = $1 LIMIT 1;
+
+-- name: CountPosts :one
+SELECT COUNT(*) FROM posts;

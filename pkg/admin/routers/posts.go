@@ -27,6 +27,6 @@ func PostRoute(rg *gin.RouterGroup, postsv i.PostInterface) {
 	g.PATCH("/:postId/like", controller.LikePost)
 	g.PATCH("/:postId/dislike", controller.DislikePost)
 
-	// g.GET("/", pc.postController.GetAllPosts)
+	g.GET("", controller.GetPosts)
 	// g.PATCH("/:postId", pc.postController.UpdatePost)
 }

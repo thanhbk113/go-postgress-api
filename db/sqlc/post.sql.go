@@ -12,6 +12,17 @@ import (
 	"github.com/google/uuid"
 )
 
+const countPosts = `-- name: CountPosts :one
+SELECT COUNT(*) FROM posts
+`
+
+func (q *Queries) CountPosts(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countPostsStmt, countPosts)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts (
   title,

@@ -8,6 +8,7 @@ import (
 	"thanhbk113/internal/config"
 
 	_ "github.com/lib/pq"
+	"github.com/logrusorgru/aurora"
 )
 
 var (
@@ -24,7 +25,7 @@ func database() {
 
 	db = dbConn.New(conn)
 	sqlDB = conn
-	fmt.Println("PostgreSQL connected successfully...")
+	fmt.Println(aurora.Green("PostgreSQL connected successfully..."))
 }
 
 // GetDB

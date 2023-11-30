@@ -9,6 +9,7 @@ import (
 	"thanhbk113/pkg/admin/server"
 
 	"github.com/gin-gonic/gin"
+	"github.com/logrusorgru/aurora"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -37,7 +38,7 @@ func main() {
 	admin.SwaggerInfo.Host = domain
 	fmt.Println("Swagger host : ", admin.SwaggerInfo.BasePath+"/swagger/*")
 	g.GET(admin.SwaggerInfo.BasePath+"/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	fmt.Println("Swagger url : ", domain+admin.SwaggerInfo.BasePath+"/swagger/index.html")
+	fmt.Println(aurora.Green("Swagger url : " + domain + admin.SwaggerInfo.BasePath + "/swagger/index.html"))
 
 	log.Fatal(g.Run(":" + config.GetConfig().ServerPort))
 }

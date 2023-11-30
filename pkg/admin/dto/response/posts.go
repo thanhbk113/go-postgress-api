@@ -11,3 +11,9 @@ type PostResponse struct {
 type LikeResponse struct {
 	Like int `json:"like"`
 }
+
+type PostResposeAll struct {
+	PostResponse []PostResponse `json:"post_response"`
+	Total        int            `json:"total"`
+	Limit        int32          `json:"limit"`
+}

@@ -3,6 +3,8 @@ package handler
 import (
 	"fmt"
 	gincustom "thanhbk113/internal/gin"
+	"thanhbk113/internal/query"
+	"thanhbk113/internal/util"
 
 	dto "thanhbk113/pkg/admin/dto/request"
 	i "thanhbk113/pkg/admin/interface"
@@ -103,6 +105,35 @@ func (p *PostHandler) GetPostById(c *gin.Context) {
 
 // Create godoc
 // @tags Post
+// @summary GetListPost
+// @id get-posts
+// @security ApiKeyAuth
+// @accept json
+// @produce json
+// @success 200 {object} nil
+// @param payload query dto.GetPostsRequest true "Query"
+// @router /posts [get]
+func (p *PostHandler) GetPosts(c *gin.Context) {
+
+	var (
+		gg    = gincustom.GinGetCustomCtx(c)
+		ctx   = gg.GetRequestCtx()
+		query = query.CommonQuery{
+			Limit: util.StringToInt(c.Query("limit")),
+			Page:  util.StringToInt(c.Query("page")),
+		}
+	)
+
+	post, err := p.PostService.GetPosts(ctx, query)
+	if err != nil {
+		gg.Response400(nil, err.Error())
+		return
+	}
+	gg.Response200(post, "")
+}
+
+// Create godoc
+// @tags Post
 // @summary LikePost
 // @id like-post
 // @security ApiKeyAuth
@@ -110,7 +141,7 @@ func (p *PostHandler) GetPostById(c *gin.Context) {
 // @produce json
 // @param id path string true "Post Id"
 // @success 200 {object} nil
-// @router /posts/{id} [patch]
+// @router /post/{id} [patch]
 func (p *PostHandler) LikePost(c *gin.Context) {
 
 	var (

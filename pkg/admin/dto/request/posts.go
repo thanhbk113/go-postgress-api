@@ -17,3 +17,8 @@ func (p CreatePostRequest) MapCreatePostRequestToSchema() schemas.CreatePost {
 		Image:    p.Image,
 	}
 }
+
+type GetPostsRequest struct {
+	Page  int `json:"page" binding:"required"`
+	Limit int `json:"limit" binding:"required"`
+}

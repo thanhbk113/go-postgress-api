@@ -30,7 +30,51 @@ info:
   title: Go-Postgres - Admin API
   version: "1.0"
 paths:
+  /post/{id}:
+    patch:
+      consumes:
+      - application/json
+      operationId: like-post
+      parameters:
+      - description: Post Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: LikePost
+      tags:
+      - Post
   /posts:
+    get:
+      consumes:
+      - application/json
+      operationId: get-posts
+      parameters:
+      - in: query
+        name: limit
+        required: true
+        type: integer
+      - in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: GetListPost
+      tags:
+      - Post
     post:
       consumes:
       - application/json
@@ -91,26 +135,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: GetPostById
-      tags:
-      - Post
-    patch:
-      consumes:
-      - application/json
-      operationId: like-post
-      parameters:
-      - description: Post Id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - ApiKeyAuth: []
-      summary: LikePost
       tags:
       - Post
 securityDefinitions:
