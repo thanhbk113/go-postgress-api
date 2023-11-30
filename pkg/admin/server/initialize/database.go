@@ -6,6 +6,8 @@ import (
 	"log"
 	dbConn "thanhbk113/db/sqlc"
 	"thanhbk113/internal/config"
+
+	_ "github.com/lib/pq"
 )
 
 var (

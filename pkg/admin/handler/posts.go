@@ -14,6 +14,16 @@ type PostHandler struct {
 	PostService i.PostInterface
 }
 
+// Create godoc
+// @tags Post
+// @summary Create Post
+// @id create-post
+// @security ApiKeyAuth
+// @accept json
+// @produce json
+// @param payload body dto.CreatePostRequest true "Payload"
+// @success 200 {object} nil
+// @router /posts [post]
 func (p *PostHandler) CreatePost(c *gin.Context) {
 
 	var (
@@ -34,6 +44,16 @@ func (p *PostHandler) CreatePost(c *gin.Context) {
 	gg.Response200(nil, "")
 }
 
+// Create godoc
+// @tags Post
+// @summary Delete Post
+// @id delete-post
+// @security ApiKeyAuth
+// @accept json
+// @produce json
+// @param id path string true "Post Id"
+// @success 200 {object} nil
+// @router /posts/{id} [delete]
 func (p *PostHandler) DeletePostById(c *gin.Context) {
 
 	var (
@@ -52,6 +72,16 @@ func (p *PostHandler) DeletePostById(c *gin.Context) {
 
 }
 
+// Create godoc
+// @tags Post
+// @summary GetPostById
+// @id get-post-by-id
+// @security ApiKeyAuth
+// @accept json
+// @produce json
+// @param id path string true "Post Id"
+// @success 200 {object} nil
+// @router /posts/{id} [get]
 func (p *PostHandler) GetPostById(c *gin.Context) {
 
 	var (
@@ -71,6 +101,16 @@ func (p *PostHandler) GetPostById(c *gin.Context) {
 	gg.Response200(post, "")
 }
 
+// Create godoc
+// @tags Post
+// @summary LikePost
+// @id like-post
+// @security ApiKeyAuth
+// @accept json
+// @produce json
+// @param id path string true "Post Id"
+// @success 200 {object} nil
+// @router /posts/{id} [patch]
 func (p *PostHandler) LikePost(c *gin.Context) {
 
 	var (

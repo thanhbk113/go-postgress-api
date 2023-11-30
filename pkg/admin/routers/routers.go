@@ -12,7 +12,7 @@ func Init(c *gin.Engine) {
 	ctx := context.Background()
 	c.Use(middleware.CORSConfig())
 
-	r := c.Group("/api")
+	r := c.Group("/admin")
 
 	postsv := posts.NewPostsService(ctx)
 

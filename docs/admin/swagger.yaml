@@ -1,0 +1,121 @@
+basePath: /admin
+definitions:
+  thanhbk113_pkg_admin_dto_request.CreatePostRequest:
+    properties:
+      category:
+        type: string
+      content:
+        type: string
+      image:
+        type: string
+      title:
+        type: string
+    required:
+    - category
+    - content
+    - image
+    - title
+    type: object
+info:
+  contact:
+    name: Dev team
+    url: https://bag-manage.vn
+  description: |
+    All APIs for Go-Postgres admin.
+
+    ******************************
+    - Add description
+    ******************************
+  termsOfService: https://bag-manage.vn
+  title: Go-Postgres - Admin API
+  version: "1.0"
+paths:
+  /posts:
+    post:
+      consumes:
+      - application/json
+      operationId: create-post
+      parameters:
+      - description: Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/thanhbk113_pkg_admin_dto_request.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: Create Post
+      tags:
+      - Post
+  /posts/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: delete-post
+      parameters:
+      - description: Post Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Post
+      tags:
+      - Post
+    get:
+      consumes:
+      - application/json
+      operationId: get-post-by-id
+      parameters:
+      - description: Post Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: GetPostById
+      tags:
+      - Post
+    patch:
+      consumes:
+      - application/json
+      operationId: like-post
+      parameters:
+      - description: Post Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: LikePost
+      tags:
+      - Post
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
