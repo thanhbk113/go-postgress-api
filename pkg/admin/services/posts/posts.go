@@ -8,6 +8,7 @@ import (
 	"thanhbk113/internal/constant"
 	"thanhbk113/internal/module/redis"
 	"thanhbk113/internal/query"
+	"time"
 
 	dto "thanhbk113/pkg/admin/dto/request"
 	dtores "thanhbk113/pkg/admin/dto/response"
@@ -127,14 +128,14 @@ func (p *postImpl) TransactionDisLikePost(ctx context.Context, postId string) er
 func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtores.PostResposeAll, error) {
 	var (
 		postResponseAll = dtores.PostResposeAll{
-			PostResponse: make([]dtores.PostResponse, query.Limit),
+			PostResponse: make([]dtores.PostResponse, 0),
 			Total:        0,
 			Limit:        query.Limit,
 		}
 	)
 
 	//check db in redis or not
-	cacheKey := constant.CachePosts
+	cacheKey := constant.CachePosts + fmt.Sprintf("%d", query.Page) + fmt.Sprintf("%d", query.Limit)
 
 	cacheData, err := redis.GetValue(cacheKey)
 
@@ -143,6 +144,7 @@ func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtore
 	}
 
 	if cacheData != "" {
+		fmt.Println("get data from cache redis: ", cacheData)
 		err = json.Unmarshal([]byte(cacheData), &postResponseAll)
 
 		if err != nil {
@@ -154,7 +156,7 @@ func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtore
 
 	args := &db.ListPostsParams{
 		Limit:  query.Limit,
-		Offset: query.Page,
+		Offset: query.Page * query.Limit,
 	}
 
 	posts, err := initialize.GetDB().ListPosts(ctx, *args)
@@ -175,7 +177,7 @@ func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtore
 		return postResponseAll, nil
 	}
 
-	for i, post := range posts {
+	for _, post := range posts {
 		postResponse := dtores.PostResponse{
 			Title:     post.Title,
 			Category:  post.Category,
@@ -184,12 +186,12 @@ func (p *postImpl) GetPosts(ctx context.Context, query query.CommonQuery) (dtore
 			CreatedAt: post.CreatedAt.String(),
 		}
 
-		postResponseAll.PostResponse[i] = postResponse
+		postResponseAll.PostResponse = append(postResponseAll.PostResponse, postResponse)
 
 	}
 
 	//cache data to redis
-	err = redis.SetKeyValue(cacheKey, postResponseAll, 15)
+	err = redis.SetKeyValue(cacheKey, postResponseAll, 15*time.Second)
 
 	if err != nil {
 		return postResponseAll, err
