@@ -49,7 +49,6 @@ func TestAdd(t *testing.T) {
 
 	wg.Wait()
 
-	fmt.Println("holdMes", holdMes)
 	if kafka.MatchMessage(ctx, topic, holdMes) {
 		_ = servicepost.NewPostsService(ctx).TransactionLikePost(ctx, postId)
 	}
