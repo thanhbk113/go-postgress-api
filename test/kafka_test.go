@@ -6,6 +6,7 @@ import (
 	"sync"
 	"testing"
 	"thanhbk113/pkg/admin/server/initialize"
+	"thanhbk113/pkg/admin/server/initialize/kafka"
 	servicepost "thanhbk113/pkg/admin/services/posts"
 	"time"
 )
@@ -16,35 +17,42 @@ func TestAdd(t *testing.T) {
 		wg       sync.WaitGroup
 		postId   = "0289713c-d334-44aa-8731-7bac8667c77f"
 		topic    = "like-post"
+		holdMes  = ""
 	)
 	ctx := context.Background()
 
 	initialize.Init()
 
-	initialize.CreateTopic(topic)
+	kafka.CreateTopic(topic)
 
-	initialize.ListTopic()
+	kafka.ListTopic()
 
 	expected = 1
 
 	intTimeNow := time.Now().Unix()
 	wg.Add(2)
+
 	for i := 0; i < 2; i++ {
 		go func(i int, time int64) {
 			fmt.Println("time", time+int64(i))
 			message := fmt.Sprintf("like%s%d", postId, time+int64(i))
 			key := fmt.Sprintf("like%s%d", postId, time+int64(i))
-			initialize.SendMessage(topic, message, key)
+			kafka.SendMessage(topic, message, key)
 
-			if initialize.MatchMessage(ctx, topic, key) {
-				_ = servicepost.NewPostsService(ctx).TransactionLikePost(ctx, postId)
+			if holdMes == "" {
+				holdMes = message
 			}
 
 			wg.Done()
 		}(i, intTimeNow)
 	}
+
 	wg.Wait()
 
+	fmt.Println("holdMes", holdMes)
+	if kafka.MatchMessage(ctx, topic, holdMes) {
+		_ = servicepost.NewPostsService(ctx).TransactionLikePost(ctx, postId)
+	}
 	result := servicepost.NewPostsService(ctx).GetTotalLikePost(ctx, postId)
 
 	if result != expected {

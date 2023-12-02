@@ -1,4 +1,4 @@
-package initialize
+package kafka
 
 import (
 	"context"
@@ -14,7 +14,7 @@ var (
 	conn *kafka.Conn
 )
 
-func initKafka() {
+func InitKafka() {
 	broker := config.GetConfig().KAFKA_URI
 
 	connKafka, err := kafka.Dial("tcp", broker)
