@@ -94,6 +94,16 @@ func (p *postImpl) TransactionLikePost(ctx context.Context, postId string) error
 
 	qtx := db.WithTx(tx)
 
+	total, err := qtx.GetLike(ctx, uuid.MustParse(postId))
+
+	if err != nil {
+		return err
+	}
+
+	if total >= 1 {
+		return fmt.Errorf("post have liked")
+	}
+
 	err = qtx.LikePost(ctx, uuid.MustParse(postId))
 
 	if err != nil {
@@ -108,6 +118,7 @@ func (p *postImpl) TransactionDisLikePost(ctx context.Context, postId string) er
 
 	db := initialize.GetDB()
 	tx, err := initialize.GetSQLDB().BeginTx(ctx, nil)
+	defer tx.Rollback()
 
 	if err != nil {
 		return err
@@ -122,6 +133,17 @@ func (p *postImpl) TransactionDisLikePost(ctx context.Context, postId string) er
 	}
 
 	return tx.Commit()
+}
+
+// GetTotalLikePost
+func (p *postImpl) GetTotalLikePost(ctx context.Context, postId string) int32 {
+	total, err := initialize.GetDB().GetLike(ctx, uuid.MustParse(postId))
+
+	if err != nil {
+		return 0
+	}
+
+	return total
 }
 
 // GetPosts

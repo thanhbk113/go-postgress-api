@@ -14,4 +14,5 @@ type PostInterface interface {
 	TransactionLikePost(ctx context.Context, postId string) error
 	TransactionDisLikePost(ctx context.Context, postId string) error
 	GetPosts(ctx context.Context, query query.CommonQuery) (dtores.PostResposeAll, error)
+	GetTotalLikePost(ctx context.Context, postId string) int32
 }

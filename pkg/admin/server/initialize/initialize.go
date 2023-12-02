@@ -9,4 +9,6 @@ func Init() {
 	config.Init()
 	database()
 	redis.InitRedis()
+	initKafka()
+
 }

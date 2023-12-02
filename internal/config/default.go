@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Config struct {
@@ -14,6 +15,7 @@ type Config struct {
 	ClientPort     string `mapstructure:"CLIENT_PORT"`
 	RedisUri       string `mapstructure:"REDIS_URI"`
 	RedisPassword  string `mapstructure:"REDIS_PASSWORD"`
+	KAFKA_URI      string `mapstructure:"KAFKA_URI"`
 }
 
 var config Config
@@ -31,6 +33,7 @@ func LoadConfig() (err error) {
 		ClientPort:     os.Getenv("CLIENT_PORT"),
 		RedisUri:       os.Getenv("REDIS_URI"),
 		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
+		KAFKA_URI:      os.Getenv("KAFKA_URI"),
 	}
 
 	return nil

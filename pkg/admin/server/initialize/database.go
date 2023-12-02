@@ -25,7 +25,7 @@ func database() {
 
 	db = dbConn.New(conn)
 	sqlDB = conn
-	fmt.Println(aurora.Green("PostgreSQL connected successfully..."))
+	fmt.Println(aurora.Green("***  PostgreSQL connected successfully:" + " ***"))
 }
 
 // GetDB
